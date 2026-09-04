@@ -7,7 +7,7 @@ import tomllib
 
 import pytest
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DOCS = ["AGENTS.md", "README.md", "CONTRIBUTING.md"]
 
 PACKAGES = [
@@ -16,6 +16,7 @@ PACKAGES = [
     "fairspec",
     "library",
     "metadata",
+    "project",
     "table",
     "terminal",
 ]
@@ -51,6 +52,12 @@ class TestDocs:
         target = os.readlink(path)
         resolved = os.path.abspath(os.path.join(os.path.dirname(path), target))
         assert resolved == os.path.join(ROOT, "AGENTS.md")
+
+    def test_exposes_skills_to_claude_code_as_a_symlink(self) -> None:
+        path = os.path.join(ROOT, ".claude", "skills")
+        target = os.readlink(path)
+        resolved = os.path.abspath(os.path.join(os.path.dirname(path), target))
+        assert resolved == os.path.join(ROOT, "project", "skills")
 
 
 def read_doc(name: str) -> str:

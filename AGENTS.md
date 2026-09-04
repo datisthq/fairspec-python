@@ -45,7 +45,7 @@ A package may depend on any layer below it, not only the adjacent one — `table
 `dataset` and `metadata`, and `library` pulls in all three.
 
 Each workspace directory `<name>/` holds one import package `<name>/fairspec_<name>/`, except
-the meta-package, which is `fairspec/fairspec/`.
+the meta-package, which is `fairspec/fairspec/`, and `project/`, which ships nothing.
 
 - `metadata` — pydantic models (`Resource`, `Dataset`, `TableSchema`, `Column`, `FileDialect`), descriptor load/save, path normalization, JSON Schema profiles. No `fairspec-*` dependencies; the base of the graph.
 - `dataset` — file, folder and stream I/O plus dataset-source plugins: ckan, descriptor, folder, github, zenodo, zip.
@@ -53,8 +53,9 @@ the meta-package, which is `fairspec/fairspec/`.
 - `library` — the plugin registry and the facade actions every consumer calls: `load_table`, `save_table`, `load_dataset`, `save_dataset`, `validate_*`, `infer_*`.
 - `terminal` — the `fairspec` CLI (typer), one command group per entity.
 - `fairspec` — umbrella package re-exporting `fairspec_library` and shipping the CLI binary.
+- `project` — the agent skills in `skills/` (reached as `.claude/skills`) and the docs guard in `_test/`. Not a uv workspace member and nothing imports it, which is why the skills live here rather than in a package something imports.
 
-Unlike `fairspec-typescript`, this repo has no `agent` and no `extension` package.
+Unlike `fairspec-typescript`, this repo has no `mcp-server` and no `extension` package.
 
 ## Code structure
 
