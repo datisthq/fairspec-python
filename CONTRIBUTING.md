@@ -6,10 +6,10 @@ Thank you for your interest in contributing to Fairspec Python! This document pr
 
 Project is a monorepo with the following packages:
 
-- `fairspec-metadata`: Core metadata functionality
-- `fairspec-dataset`: File-related functionality
-- `fairspec-table`: Table-related functionality
-- `fairspec-library`: All the above functionality
+- `fairspec-metadata`: Core metadata models and descriptors
+- `fairspec-dataset`: File, folder and stream I/O plus dataset source plugins
+- `fairspec-table`: Polars-backed table engine plus file format plugins
+- `fairspec-library`: All the above functionality behind one plugin registry
 - `fairspec-terminal`: Terminal interface
 - `fairspec`: Meta-package that re-exports the underlying functionality
 
@@ -24,7 +24,7 @@ Project is a monorepo with the following packages:
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/fairspec-python.git fairspec-python
+   git clone https://github.com/datisthq/fairspec-python.git fairspec-python
    cd fairspec-python
    ```
 
@@ -56,7 +56,7 @@ We use Ruff for linting and formatting, and ty for type checking:
 
 ### Testing
 
-Tests are collocated with the code and use pytest:
+Tests are collocated with the code in `_test` directories and use pytest:
 
 - **Run All Tests**: (includes linting and type checking)
   ```bash
@@ -70,16 +70,19 @@ Tests are collocated with the code and use pytest:
 
 - **Run a Specific Test**:
   ```bash
-  uv run pytest path/to/test_spec.py
+  uv run pytest metadata/fairspec_metadata/actions/descriptor/_test/load_spec.py
   ```
 
 ## Code Style Guidelines
 
 - Use Python with strict type checking
 - Target Python 3.12+
-- Tests should be placed in `*_spec.py` files alongside the code
+- Tests should be placed in `*_spec.py` files inside a `_test` directory next to the code,
+  together with any `fixtures` they need
 - Use 4-space indentation, UTF-8 encoding, and LF line endings
 - Use PascalCase for classes, snake_case for functions, methods, and variables
+
+See `AGENTS.md` for the full set of conventions.
 
 ## Making Changes to the Meta-Package
 
