@@ -65,19 +65,19 @@ Tests are collocated with the code in `_test` directories and use pytest:
 
 - **Run Tests Only**: (without linting/type checking)
   ```bash
-  uv run task spec
+  uv run task unit
   ```
 
 - **Run a Specific Test**:
   ```bash
-  uv run pytest metadata/fairspec_metadata/actions/descriptor/_test/load_spec.py
+  uv run pytest metadata/fairspec_metadata/actions/descriptor/_test/load_unit.py
   ```
 
 ## Code Style Guidelines
 
 - Use Python with strict type checking
 - Target Python 3.12+
-- Tests should be placed in `*_spec.py` files inside a `_test` directory next to the code,
+- Tests should be placed in `*_unit.py` files inside a `_test` directory next to the code,
   together with any `fixtures` they need
 - Use 4-space indentation, UTF-8 encoding, and LF line endings
 - Use PascalCase for classes, snake_case for functions, methods, and variables

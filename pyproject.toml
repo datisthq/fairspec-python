@@ -36,13 +36,13 @@ format = "ruff format"
 install = "uv sync --all-packages && ([ \"$CI\" = 'true' ] || lefthook install)"
 lint = "ruff check"
 publish = "uv publish build/*"
-spec = "pytest --cov --cov-report html --cov-report json"
-test = "task lint && task type && task spec"
+unit = "pytest --cov --cov-report html --cov-report json"
+test = "task lint && task type && task unit"
 type = "ty check"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
-python_files = "*_spec.py"
+python_files = "*_unit.py"
 filterwarnings = ["error::UserWarning"]
 
 [tool.coverage.run]

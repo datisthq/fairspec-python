@@ -19,12 +19,12 @@ source plugins, and a CLI. (Also read by Claude Code via `.claude/CLAUDE.md`.)
 ## Commands
 
 - `uv run task install` — `uv sync --all-packages` plus the lefthook hooks
-- `uv run task test` — full gate: lint + type + spec
+- `uv run task test` — full gate: lint + type + unit
 - `uv run task lint` — `ruff check`
 - `uv run task format` — `ruff format`, auto-fix formatting
 - `uv run task type` — `ty check`
-- `uv run task spec` — pytest with coverage (html + json reports)
-- Single test — `uv run pytest metadata/fairspec_metadata/actions/descriptor/_test/load_spec.py`, or `uv run pytest -k "name"`
+- `uv run task unit` — pytest with coverage (html + json reports)
+- Single test — `uv run pytest metadata/fairspec_metadata/actions/descriptor/_test/load_unit.py`, or `uv run pytest -k "name"`
 - `uv run task coverage` — open the generated `htmlcov` report
 - `uv run task build` — `uv build --all-packages` into `build/`
 - `uv run task publish` — `uv publish build/*`
@@ -76,10 +76,14 @@ A leading underscore marks a directory that is **not a member of the structure a
 TypeScript uses a leading `-` for this; Python cannot, because `_shared` is imported by its
 siblings and `-shared` is not a valid identifier.
 
-- **`_test/`** — unit tests and everything that exists only to serve them. `<module>.py` is tested by `_test/<module>_spec.py`, fixtures live in `_test/fixtures/`, and generated artifacts (VCR cassettes) in `_test/fixtures/generated/`. A shared test double goes in the same folder, named after its export (`plugins/xlsx/actions/table/_test/test_data.py`).
+The same constraint sets the test suffix. TypeScript names tests `<module>.unit.ts`; Python
+uses `<module>_unit.py`, not `<module>.unit.py`, because a dot is not legal in a module name
+and specs import their subject relatively — `.unit.py` would break every `from ..load import`.
+
+- **`_test/`** — unit tests and everything that exists only to serve them. `<module>.py` is tested by `_test/<module>_unit.py`, fixtures live in `_test/fixtures/`, and generated artifacts (VCR cassettes) in `_test/fixtures/generated/`. A shared test double goes in the same folder, named after its export (`plugins/xlsx/actions/table/_test/test_data.py`).
 - **`_shared/`** — _production_ code shared by the siblings around it that must not itself be one of them: a helper among one-action-per-file modules (`actions/table/_shared/helpers.py`). Not fixtures, not mocks. A `_shared/` folder can hold its own `_test/`.
 
-Test discovery is by the `*_spec.py` **filename suffix** (`python_files` in `pyproject.toml`),
+Test discovery is by the `*_unit.py` **filename suffix** (`python_files` in `pyproject.toml`),
 not the folder name — the folder is a structural convention. Move a test and its `fixtures/`
 together: fixture paths resolve from `os.path.dirname(__file__)`, and the `vcr_cassette_dir`
 fixture resolves from the test file's own directory.
@@ -113,7 +117,7 @@ relative import reaches beyond the top-level package.
 
 ## Specs
 
-- Unit tests are pytest, named `*_spec.py`, in collocated `_test` folders
+- Unit tests are pytest, named `*_unit.py`, in collocated `_test` folders
 - Use `class TestXxx:` with `def test_...` methods
 - Don't add useless comments like "Arrange", "Act", "Assert"
 - Network tests use `@pytest.mark.vcr` from pytest-recording; the cassette lands in `_test/fixtures/generated/<TestClass>.<test_name>.yaml`. Renaming a class or test renames that file, so the old cassette is orphaned and the next run silently re-records from the live network — check `git status` after renaming a recorded test.
