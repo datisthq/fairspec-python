@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def load_parquet_table(resource: Resource, **options: Unpack[LoadTableOptions]) -> Table:
-    paths = prefetch_files(resource)
+    paths = prefetch_files(resource, concurrency=options.get("concurrency"))
     if not paths:
         raise Exception("Resource data is not defined")
 

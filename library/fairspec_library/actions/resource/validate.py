@@ -18,7 +18,7 @@ def validate_resource(
 ) -> Report:
     errors: list[FairspecError] = []
 
-    file_report = validate_file(resource)
+    file_report = validate_file(resource, concurrency=options.get("concurrency"))
     errors.extend(file_report.errors)
     if not file_report.valid:
         return create_report(errors)

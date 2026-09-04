@@ -44,3 +44,19 @@ class TestInferDataset:
         result = validate_dataset_descriptor(descriptor)
         assert result.valid is True
         assert result.errors == []
+
+
+class TestInferDatasetConcurrency:
+    def test_should_infer_resources_in_order_under_concurrency(self):
+        paths = [
+            write_temp_file(f"id,name\n{index},english", format="csv")
+            for index in range(4)
+        ]
+        dataset = Dataset(resources=[Resource(data=path) for path in paths])
+
+        serial = infer_dataset(dataset, concurrency=1)
+        concurrent = infer_dataset(dataset, concurrency=4)
+
+        assert serial.model_dump() == concurrent.model_dump()
+        assert serial.resources is not None
+        assert [resource.data for resource in serial.resources] == paths

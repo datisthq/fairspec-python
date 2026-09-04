@@ -16,6 +16,7 @@ from .actions.resource.save import SaveFileCallback, SaveFileProps, save_resourc
 from .actions.stream.concat import concat_file_streams
 from .actions.stream.load import load_file_stream
 from .actions.stream.save import save_file_stream
+from .models.concurrency import ConcurrencyOptions
 from .models.dataset import SaveDatasetOptions
 from .models.file_dialect import InferFileDialectOptions
 from .models.dataset import SaveDatasetResult
@@ -42,6 +43,7 @@ from fairspec_metadata.plugin import MetadataPlugin
 
 __all__ = [
     "CkanPlugin",
+    "ConcurrencyOptions",
     "DatasetPlugin",
     "DescriptorPlugin",
     "FileDescription",

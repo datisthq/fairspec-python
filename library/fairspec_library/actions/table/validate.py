@@ -31,5 +31,10 @@ def validate_table(resource: Resource, **options: Unpack[ValidateTableOptions]) 
     if table is None:
         return create_report()
 
-    errors = inspect_table(table, table_schema=table_schema, max_errors=max_errors)
+    errors = inspect_table(
+        table,
+        table_schema=table_schema,
+        max_errors=max_errors,
+        concurrency=options.get("concurrency"),
+    )
     return create_report(list(errors))

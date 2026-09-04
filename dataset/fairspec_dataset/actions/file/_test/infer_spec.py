@@ -172,3 +172,24 @@ class TestInferTextual:
         )
         path = write_temp_file(buffer)
         assert infer_textual(Resource(data=path)) is False
+
+
+class TestInferHashConcurrency:
+    def test_hashes_multipart_identically_under_concurrency(self):
+        paths = [write_temp_file(f"part-{index}\n") for index in range(4)]
+        resource = Resource(data=paths)
+
+        serial = infer_hash(resource, concurrency=1)
+        concurrent = infer_hash(resource, concurrency=4)
+
+        assert serial == concurrent
+        assert len(serial) == 64
+
+    def test_hashes_multipart_in_path_order(self):
+        first = write_temp_file("a")
+        second = write_temp_file("b")
+
+        forward = infer_hash(Resource(data=[first, second]), concurrency=4)
+        backward = infer_hash(Resource(data=[second, first]), concurrency=4)
+
+        assert forward != backward

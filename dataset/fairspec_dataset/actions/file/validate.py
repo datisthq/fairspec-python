@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from fairspec_metadata import Resource
 
 
-def validate_file(resource: Resource) -> Report:
+def validate_file(resource: Resource, *, concurrency: int | None = None) -> Report:
     errors: list[FairspecError] = []
 
     if resource.textual:
@@ -28,7 +28,9 @@ def validate_file(resource: Resource) -> Report:
     integrity = resource.integrity
     if integrity:
         expected_hash = integrity.hash
-        actual_hash = infer_hash(resource, hash_type=integrity.type)
+        actual_hash = infer_hash(
+            resource, hash_type=integrity.type, concurrency=concurrency
+        )
 
         if actual_hash != expected_hash:
             errors.append(

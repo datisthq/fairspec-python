@@ -12,7 +12,12 @@ from fairspec_library.actions.file_dialect.infer import infer_file_dialect
 from fairspec_library.actions.table_schema.infer import infer_table_schema
 
 
-def infer_resource(resource: Resource, *, resource_number: int | None = None) -> Resource:
+def infer_resource(
+    resource: Resource,
+    *,
+    resource_number: int | None = None,
+    concurrency: int | None = None,
+) -> Resource:
     resource = resource.model_copy(deep=True)
 
     if not resource.name:
@@ -27,7 +32,7 @@ def infer_resource(resource: Resource, *, resource_number: int | None = None) ->
             resource.textual = infer_textual(resource)
 
     if not resource.integrity:
-        resource.integrity = infer_integrity(resource)
+        resource.integrity = infer_integrity(resource, concurrency=concurrency)
 
     if not resource.dataSchema:
         resource.dataSchema = infer_data_schema(resource)

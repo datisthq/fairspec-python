@@ -13,6 +13,7 @@ from fairspec_dataset.actions.file.load import load_file
 from fairspec_dataset.actions.file.prefetch import prefetch_files
 from fairspec_dataset.actions.stream.concat import concat_file_streams
 from fairspec_dataset.actions.stream.load import load_file_stream
+from fairspec_dataset.helpers.concurrency import run_concurrent_tasks
 
 if TYPE_CHECKING:
     from fairspec_metadata import Resource
@@ -54,8 +55,9 @@ def infer_integrity(
     resource: Resource,
     *,
     hash_type: str = "sha256",
+    concurrency: int | None = None,
 ) -> Integrity | None:
-    hash_value = infer_hash(resource, hash_type=hash_type)
+    hash_value = infer_hash(resource, hash_type=hash_type, concurrency=concurrency)
 
     if not hash_value:
         return None
@@ -67,13 +69,14 @@ def infer_hash(
     resource: Resource,
     *,
     hash_type: str = "sha256",
+    concurrency: int | None = None,
 ) -> str:
-    local_paths = prefetch_files(resource)
+    local_paths = prefetch_files(resource, concurrency=concurrency)
 
     if not local_paths:
         return ""
 
-    streams = [load_file_stream(path) for path in local_paths]
+    streams = run_concurrent_tasks(load_file_stream, local_paths, concurrency=concurrency)
     stream = concat_file_streams(streams)
 
     h = hashlib.new(hash_type)
@@ -81,8 +84,8 @@ def infer_hash(
     return h.hexdigest()
 
 
-def infer_bytes(resource: Resource) -> int:
-    local_paths = prefetch_files(resource)
+def infer_bytes(resource: Resource, *, concurrency: int | None = None) -> int:
+    local_paths = prefetch_files(resource, concurrency=concurrency)
 
     total = 0
     for local_path in local_paths:

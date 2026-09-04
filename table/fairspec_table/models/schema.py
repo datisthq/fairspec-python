@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal, TypedDict
 
+from fairspec_dataset import ConcurrencyOptions
 from fairspec_metadata import TableSchema
 
 from .column import PolarsColumn
@@ -43,7 +44,7 @@ class TableSchemaOptions(TypedDict, total=False):
     ]
 
 
-class InferTableSchemaOptions(TableSchemaOptions, total=False):
+class InferTableSchemaOptions(TableSchemaOptions, ConcurrencyOptions, total=False):
     sampleRows: int
     confidence: float
     commaDecimal: bool

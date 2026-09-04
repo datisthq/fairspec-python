@@ -3,6 +3,8 @@ import os
 import pytest
 from fairspec_metadata import Resource
 
+from fairspec_dataset.actions.file.temp import write_temp_file
+
 from ..prefetch import prefetch_files
 
 REMOTE_URL = "https://raw.githubusercontent.com/datisthq/fairspec-typescript/refs/heads/main/table/plugins/csv/actions/table/-test/fixtures/table.csv"
@@ -36,3 +38,12 @@ class TestPrefetchFiles:
         assert "id,name" in content
         assert "1,english" in content
         assert "中文" not in content
+
+
+class TestPrefetchLocalFiles:
+    def test_prefetches_local_paths_in_order(self):
+        paths = [write_temp_file(f"part-{index}\n") for index in range(4)]
+        resource = Resource(data=paths)
+
+        assert prefetch_files(resource, concurrency=1) == paths
+        assert prefetch_files(resource, concurrency=4) == paths

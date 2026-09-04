@@ -26,7 +26,7 @@ def load_xlsx_table(resource: Resource, **options: Unpack[LoadTableOptions]) -> 
     if not file_dialect:
         raise Exception("Resource data is not compatible")
 
-    paths = prefetch_files(resource)
+    paths = prefetch_files(resource, concurrency=options.get("concurrency"))
     if not paths:
         raise Exception("Resource path is not defined")
 

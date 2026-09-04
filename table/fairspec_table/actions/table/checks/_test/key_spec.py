@@ -194,3 +194,35 @@ class TestInspectTableRowUnique:
         assert uk_errors[0].columnNames == ["id"]
         assert uk_errors[1].rowNumber == 6
         assert uk_errors[1].columnNames == ["id", "name"]
+
+
+class TestInspectTableRowChecksConcurrency:
+    def test_should_keep_row_check_order_under_concurrency(self):
+        table = pl.DataFrame(
+            {
+                "id": [1, 1, 2],
+                "email": ["a@a", "a@a", "b@b"],
+                "code": ["x", "x", "y"],
+            }
+        ).lazy()
+        table_schema = TableSchema(
+            properties={
+                "id": IntegerColumnProperty(),
+                "email": StringColumnProperty(),
+                "code": StringColumnProperty(),
+            },
+            primaryKey=["id"],
+            uniqueKeys=[["email"], ["code"]],
+        )
+
+        serial = inspect_table(table, table_schema=table_schema, concurrency=1)
+        concurrent = inspect_table(table, table_schema=table_schema, concurrency=4)
+
+        assert [error.type for error in serial] == [
+            "row/primaryKey",
+            "row/uniqueKey",
+            "row/uniqueKey",
+        ]
+        assert [error.model_dump() for error in serial] == [
+            error.model_dump() for error in concurrent
+        ]

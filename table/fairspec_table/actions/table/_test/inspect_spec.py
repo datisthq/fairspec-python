@@ -290,3 +290,64 @@ class TestInspectTable:
         assert errors[0].columnName == "id"
         assert isinstance(errors[1], ColumnMissingError)
         assert errors[1].columnName == "name"
+
+
+class TestInspectTableConcurrency:
+    def _create_table(self) -> pl.LazyFrame:
+        return pl.DataFrame(
+            {f"c{index}": ["BAD", "ALSO BAD"] for index in range(8)}
+        ).lazy()
+
+    def _create_table_schema(self) -> TableSchema:
+        from fairspec_metadata import IntegerColumnProperty
+
+        return TableSchema(
+            properties={f"c{index}": IntegerColumnProperty() for index in range(8)}
+        )
+
+    def test_should_produce_identical_errors_for_serial_and_concurrent(self):
+        table = self._create_table()
+        table_schema = self._create_table_schema()
+
+        serial = inspect_table(table, table_schema=table_schema, concurrency=1)
+        concurrent = inspect_table(table, table_schema=table_schema, concurrency=4)
+
+        assert [error.model_dump() for error in serial] == [
+            error.model_dump() for error in concurrent
+        ]
+
+    def test_should_truncate_identically_with_max_errors(self):
+        table = self._create_table()
+        table_schema = self._create_table_schema()
+
+        serial = inspect_table(
+            table, table_schema=table_schema, max_errors=5, concurrency=1
+        )
+        concurrent = inspect_table(
+            table, table_schema=table_schema, max_errors=5, concurrency=4
+        )
+
+        assert len(serial) == 5
+        assert [error.model_dump() for error in serial] == [
+            error.model_dump() for error in concurrent
+        ]
+
+    def test_should_keep_missing_column_errors_in_schema_order(self):
+        table = pl.DataFrame({"b": [1], "d": [1]}).lazy()
+        table_schema = TableSchema(
+            properties={
+                "a": StringColumnProperty(),
+                "b": StringColumnProperty(),
+                "c": StringColumnProperty(),
+                "d": StringColumnProperty(),
+                "e": StringColumnProperty(),
+            },
+            allRequired=True,
+        )
+
+        errors = inspect_table(table, table_schema=table_schema, concurrency=4)
+        missing = [
+            error.columnName for error in errors if isinstance(error, ColumnMissingError)
+        ]
+
+        assert missing == ["a", "c", "e"]

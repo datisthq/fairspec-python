@@ -4,7 +4,9 @@ import json
 import math
 
 import polars as pl
+from fairspec_dataset.helpers.concurrency import iter_concurrent_chunks
 from fairspec_metadata import TableError, get_columns
+from fairspec_metadata import Column
 from fairspec_metadata import ColumnMissingError
 from fairspec_metadata import RowError
 from fairspec_metadata import TableSchema
@@ -15,7 +17,9 @@ from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
 from fairspec_table.settings import ERROR_COLUMN_NAME, NUMBER_COLUMN_NAME
 
-from .checks.key import create_row_key_checks
+from .checks.key import RowKeyCheck, create_row_key_checks
+
+_row_error_adapter = TypeAdapter(RowError)
 
 
 def inspect_table(
@@ -24,6 +28,7 @@ def inspect_table(
     table_schema: TableSchema | None = None,
     sample_rows: int = 100,
     max_errors: int = 1000,
+    concurrency: int | None = None,
 ) -> list[TableError]:
     errors: list[TableError] = []
 
@@ -32,10 +37,14 @@ def inspect_table(
         polars_schema = get_polars_schema(dict(sample.schema))
         mapping = SchemaMapping(source=polars_schema, target=table_schema)
 
-        column_errors = _inspect_columns(mapping, table, max_errors=max_errors)
+        column_errors = _inspect_columns(
+            mapping, table, max_errors=max_errors, concurrency=concurrency
+        )
         errors.extend(column_errors)
 
-        row_errors = _inspect_rows(mapping, table, max_errors=max_errors)
+        row_errors = _inspect_rows(
+            mapping, table, max_errors=max_errors, concurrency=concurrency
+        )
         errors.extend(row_errors)
 
     return errors[:max_errors]
@@ -46,12 +55,13 @@ def _inspect_columns(
     table: Table,
     *,
     max_errors: int,
+    concurrency: int | None = None,
 ) -> list[TableError]:
     errors: list[TableError] = []
     columns = get_columns(mapping.target.model_dump())
     max_column_errors = math.ceil(max_errors / len(columns)) if columns else max_errors
 
-    for column in columns:
+    def inspect(column: Column) -> list[TableError]:
         polars_column = next(
             (pc for pc in mapping.source.columns if pc.name == column.name),
             None,
@@ -62,14 +72,15 @@ def _inspect_columns(
                 mapping.target.required and column.name in mapping.target.required
             )
             if is_required:
-                errors.append(
-                    ColumnMissingError(type="column/missing", columnName=column.name)
-                )
-            continue
+                return [ColumnMissingError(type="column/missing", columnName=column.name)]
+            return []
 
         column_mapping = ColumnMapping(source=polars_column, target=column)
-        field_errors = inspect_column(column_mapping, table, max_errors=max_column_errors)
-        errors.extend(field_errors)
+        return inspect_column(column_mapping, table, max_errors=max_column_errors)
+
+    for chunk in iter_concurrent_chunks(inspect, columns, concurrency=concurrency):
+        for column_errors in chunk:
+            errors.extend(column_errors)
 
         if len(errors) >= max_errors:
             break
@@ -82,12 +93,13 @@ def _inspect_rows(
     table: Table,
     *,
     max_errors: int,
+    concurrency: int | None = None,
 ) -> list[TableError]:
     errors: list[TableError] = []
     columns = get_columns(mapping.target.model_dump())
     max_row_errors = math.ceil(max_errors / len(columns)) if columns else max_errors
 
-    for check in create_row_key_checks(mapping):
+    def inspect(check: RowKeyCheck) -> list[TableError]:
         row_check_table = table.with_row_index(NUMBER_COLUMN_NAME, 1).with_columns(
             pl.when(check.is_error_expr)
             .then(pl.lit(check.error_template))
@@ -101,11 +113,18 @@ def _inspect_rows(
             .collect()
         )
 
-        _row_error_adapter = TypeAdapter(RowError)
+        check_errors: list[TableError] = []
         for row in row_check_frame.to_dicts():
             error_dict = json.loads(row[ERROR_COLUMN_NAME])
             error_dict["rowNumber"] = row[NUMBER_COLUMN_NAME]
-            errors.append(_row_error_adapter.validate_python(error_dict))
+            check_errors.append(_row_error_adapter.validate_python(error_dict))
+
+        return check_errors
+
+    checks = create_row_key_checks(mapping)
+    for chunk in iter_concurrent_chunks(inspect, checks, concurrency=concurrency):
+        for check_errors in chunk:
+            errors.extend(check_errors)
 
         if len(errors) >= max_errors:
             break

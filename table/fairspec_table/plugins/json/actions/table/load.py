@@ -28,7 +28,9 @@ def load_json_table(resource: Resource, **options: Unpack[LoadTableOptions]) -> 
 
     is_lines = getattr(file_dialect, "format", None) == "jsonl"
     max_bytes = options.get("previewBytes") if is_lines else None
-    paths = prefetch_files(resource, max_bytes=max_bytes)
+    paths = prefetch_files(
+        resource, max_bytes=max_bytes, concurrency=options.get("concurrency")
+    )
     if not paths:
         raise Exception("Resource data is not defined")
 

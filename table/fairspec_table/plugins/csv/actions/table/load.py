@@ -29,7 +29,9 @@ def load_csv_table(resource: Resource, **options: Unpack[LoadTableOptions]) -> T
         raise Exception("Resource data is not compatible")
 
     max_bytes = options.get("previewBytes")
-    paths = prefetch_files(resource, max_bytes=max_bytes)
+    paths = prefetch_files(
+        resource, max_bytes=max_bytes, concurrency=options.get("concurrency")
+    )
     if not paths:
         raise Exception("Resource path is not defined")
 
