@@ -5,7 +5,7 @@ from fairspec_metadata import Resource
 
 from ..prefetch import prefetch_files
 
-REMOTE_URL = "https://raw.githubusercontent.com/fairspec/fairspec-typescript/refs/heads/main/table/plugins/csv/actions/table/fixtures/table.csv"
+REMOTE_URL = "https://raw.githubusercontent.com/datisthq/fairspec-typescript/refs/heads/main/table/plugins/csv/actions/table/-test/fixtures/table.csv"
 
 
 @pytest.mark.vcr

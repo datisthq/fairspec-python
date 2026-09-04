@@ -37,7 +37,7 @@ class TestLoadCsvTable:
     def test_should_load_remote_file_with_preview_bytes(self):
         table = load_csv_table(
             Resource(
-                data="https://raw.githubusercontent.com/fairspec/fairspec-typescript/refs/heads/main/table/plugins/csv/actions/table/fixtures/table.csv",
+                data="https://raw.githubusercontent.com/datisthq/fairspec-typescript/refs/heads/main/table/plugins/csv/actions/table/-test/fixtures/table.csv",
             ),
             previewBytes=18,
         )
