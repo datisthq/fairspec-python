@@ -21,7 +21,6 @@ class NumberMissingValueItem(FairspecModel):
 
 class BaseNumberColumnProperty(BaseColumnProperty):
     type: NumberNullablePropertyType = "number"
-    format: Literal[""] = ""
     enum: list[float] | None = Field(
         default=None,
         description="An optional array of allowed values for the column",
