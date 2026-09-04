@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import polars as pl
+import pytest
 from fairspec_dataset import write_temp_file
 from fairspec_metadata import CsvFileDialect, Resource, TsvFileDialect
 
@@ -34,6 +35,7 @@ class TestLoadCsvTable:
             {"id": 3, "name": "german"},
         ]
 
+    @pytest.mark.vcr
     def test_should_load_remote_file_with_preview_bytes(self):
         table = load_csv_table(
             Resource(
