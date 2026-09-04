@@ -53,6 +53,7 @@ source = [
   "fairspec_library",
   "fairspec_terminal",
 ]
+omit = ["*/_test/*"]
 
 [tool.ty.rules]
 index-out-of-bounds = "ignore"
