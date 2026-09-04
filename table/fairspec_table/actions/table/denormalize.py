@@ -15,7 +15,7 @@ from fairspec_table.models import (
     Table,
 )
 
-from .helpers import merge_missing_values
+from ._shared.helpers import merge_missing_values
 
 HEAD_ROWS = 100
 

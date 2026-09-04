@@ -8,7 +8,7 @@ from fairspec_table.actions.column.normalize import normalize_column
 from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
 
-from .helpers import merge_missing_values
+from ._shared.helpers import merge_missing_values
 
 HEAD_ROWS = 100
 

@@ -11,7 +11,7 @@ from fairspec_metadata import (
     ObjectColumnProperty,
 )
 
-from .helpers import inspect_json_column, inspect_text_column
+from ..helpers import inspect_json_column, inspect_text_column
 
 
 class TestInspectTextColumn:
