@@ -12,7 +12,6 @@ DOCS = ["AGENTS.md", "README.md", "CONTRIBUTING.md"]
 
 PACKAGES = [
     "dataset",
-    "docs",
     "fairspec",
     "library",
     "metadata",

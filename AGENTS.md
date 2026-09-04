@@ -53,7 +53,7 @@ the meta-package, which is `fairspec/fairspec/`, and `project/`, which ships not
 - `library` — the plugin registry and the facade actions every consumer calls: `load_table`, `save_table`, `load_dataset`, `save_dataset`, `validate_*`, `infer_*`.
 - `terminal` — the `fairspec` CLI (typer), one command group per entity.
 - `fairspec` — umbrella package re-exporting `fairspec_library` and shipping the CLI binary.
-- `project` — the agent skills in `skills/` (reached as `.claude/skills`) and the docs guard in `_test/`. Not a uv workspace member and nothing imports it, which is why the skills live here rather than in a package something imports.
+- `project` — the documentation site in `docs/`, the agent skills in `skills/` (reached as `.claude/skills`), and the docs guard in `_test/`. Not a uv workspace member and nothing imports it, which is why the skills live here rather than in a package something imports.
 
 Unlike `fairspec-typescript`, this repo has no `mcp-server` and no `extension` package.
 
