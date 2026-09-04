@@ -43,6 +43,7 @@ type = "ty check"
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 python_files = "*_spec.py"
+filterwarnings = ["error::UserWarning"]
 
 [tool.coverage.run]
 source = [

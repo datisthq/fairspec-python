@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Unpack
 
 import polars as pl
 from fairspec_metadata import create_column_from_property, get_column_properties
+from fairspec_metadata import set_property_nullable
 from fairspec_metadata import TableSchema
 
 from fairspec_table.helpers.schema import get_polars_schema
@@ -148,7 +149,7 @@ def infer_table_schema_from_sample(
         column = _build_column(name, effective_col_type, property_dict)
 
         if is_nullable:
-            _make_property_nullable(column)
+            set_property_nullable(column)
         _enhance_column(column, **options)
         columns.append(column)
 
@@ -544,12 +545,6 @@ def _enhance_column(column: Column, **options: Unpack[InferTableSchemaOptions]) 
             column.property.delimiter = options["listDelimiter"]  # type: ignore[union-attr]
         if options.get("listItemType") is not None:
             column.property.itemType = options["listItemType"]  # type: ignore[union-attr]
-
-
-def _make_property_nullable(column: Column) -> None:
-    base_type = column.property.type
-    if base_type and isinstance(base_type, str):
-        column.property.type = (base_type, "null")  # type: ignore[assignment]
 
 
 def _enhance_schema(

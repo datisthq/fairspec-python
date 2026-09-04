@@ -3,6 +3,7 @@ from .actions.column.property import (
     get_base_property_type,
     get_column_properties,
     get_is_nullable_property_type,
+    set_property_nullable,
 )
 from .actions.data_schema.assert_ import assert_data_schema
 from .actions.data_schema.load import load_data_schema
@@ -304,6 +305,7 @@ __all__ = [
     "save_file_dialect",
     "save_json_schema",
     "save_table_schema",
+    "set_property_nullable",
     "stringify_descriptor",
     "TableSchemaValidationResult",
     "validate_data_schema",

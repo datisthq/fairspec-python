@@ -35,9 +35,9 @@ class TestInferTableSchemaFromSqlite:
         assert schema["required"] == []
         assert schema["primaryKey"] is None
         assert properties == {
-            "string": {"type": ["string", "null"]},
-            "integer": {"type": ["integer", "null"]},
-            "number": {"type": ["number", "null"]},
+            "string": {"type": ("string", "null")},
+            "integer": {"type": ("integer", "null")},
+            "number": {"type": ("number", "null")},
         }
 
     def test_should_raise_error_when_resource_path_is_not_defined(self):

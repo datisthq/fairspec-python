@@ -1,4 +1,10 @@
-from .property import get_base_property_type, get_is_nullable_property_type
+from fairspec_metadata.models.column.string import StringColumn, StringColumnProperty
+
+from .property import (
+    get_base_property_type,
+    get_is_nullable_property_type,
+    set_property_nullable,
+)
 
 
 class TestGetBasePropertyType:
@@ -27,3 +33,22 @@ class TestGetIsNullablePropertyType:
 
     def test_returns_false_for_none(self):
         assert get_is_nullable_property_type(None) is False
+
+
+class TestSetPropertyNullable:
+    def test_widens_type_to_a_tuple(self):
+        column = StringColumn(name="name", type="string", property=StringColumnProperty())
+        set_property_nullable(column)
+        assert column.property.type == ("string", "null")
+
+    def test_does_not_warn_on_model_dump(self, recwarn):
+        column = StringColumn(name="name", type="string", property=StringColumnProperty())
+        set_property_nullable(column)
+        column.property.model_dump()
+        assert len(recwarn) == 0
+
+    def test_keeps_an_already_nullable_type(self):
+        property = StringColumnProperty(type=("string", "null"))
+        column = StringColumn(name="name", type="string", property=property)
+        set_property_nullable(column)
+        assert column.property.type == ("string", "null")
