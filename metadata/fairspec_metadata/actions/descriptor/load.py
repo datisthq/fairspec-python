@@ -9,6 +9,7 @@ from fairspec_metadata.actions.path.general import (
     get_is_remote_path,
 )
 from fairspec_metadata.models.descriptor import Descriptor
+from fairspec_metadata.settings import USER_AGENT
 
 
 def load_descriptor(
@@ -41,7 +42,8 @@ def _load_remote_descriptor(path: str) -> Descriptor:
     if protocol not in ("http", "https"):
         raise Error(f"Unsupported remote protocol: {protocol}")
 
-    with urllib.request.urlopen(path) as response:  # noqa: S310
+    request = urllib.request.Request(path, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request) as response:  # noqa: S310
         descriptor: Descriptor = json.loads(response.read())
 
     return descriptor

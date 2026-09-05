@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
+from fairspec_metadata.settings import USER_AGENT
+
 from ..load import Error, load_descriptor
 
 
@@ -38,3 +40,15 @@ class TestLoadDescriptor:
     def test_only_remote_rejects_local(self):
         with pytest.raises(Error, match="security"):
             load_descriptor("local.json", only_remote=True)
+
+    def test_load_remote_descriptor_sends_user_agent(self):
+        with patch(
+            "fairspec_metadata.actions.descriptor.load.urllib.request.urlopen"
+        ) as mock:
+            mock.return_value.__enter__ = lambda s: s
+            mock.return_value.__exit__ = lambda s, *a: None
+            mock.return_value.read.return_value = b"{}"
+            load_descriptor("https://example.com/test.json")
+
+        request = mock.call_args.args[0]
+        assert request.get_header("User-agent") == USER_AGENT

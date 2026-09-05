@@ -5,6 +5,7 @@ import urllib.parse
 import urllib.request
 
 from .general import get_is_remote_path, safe_relpath
+from fairspec_metadata.settings import USER_AGENT
 
 
 def get_basepath(path: str) -> str:
@@ -31,7 +32,9 @@ def get_basepath(path: str) -> str:
 
 def resolve_basepath(path: str) -> str:
     if get_is_remote_path(path):
-        request = urllib.request.Request(path, method="HEAD")
+        request = urllib.request.Request(
+            path, method="HEAD", headers={"User-Agent": USER_AGENT}
+        )
         with urllib.request.urlopen(request) as response:
             path = response.url
     return get_basepath(path)

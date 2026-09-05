@@ -4,48 +4,34 @@ import json
 from pathlib import Path
 
 from fairspec_metadata.models.profile import (
+    Profile,
     ProfileRegistry,
     ProfileRegistryItem,
     ProfileType,
 )
+from fairspec_metadata.settings import FAIRSPEC_VERSION
 
 _PROFILES_DIR = Path(__file__).parent.parent.parent / "profiles"
 
 
-def _load_profile(filename: str) -> dict:
-    with open(_PROFILES_DIR / filename, encoding="utf-8") as file:
+def _load_profile(profile_type: ProfileType) -> Profile:
+    with open(_PROFILES_DIR / f"{profile_type.value}.json", encoding="utf-8") as file:
         return json.load(file)
 
 
+_bundled_profiles: dict[ProfileType, Profile] = {
+    profile_type: _load_profile(profile_type) for profile_type in ProfileType
+}
+
+# The bundle is a snapshot of FAIRSPEC_VERSION, so it must answer to that version's URL as
+# well as "latest" -- every save_* action stamps the versioned one, and a miss goes remote.
 profile_registry: ProfileRegistry = [
     ProfileRegistryItem(
-        type=ProfileType.catalog,
-        path="https://fairspec.org/profiles/latest/catalog.json",
-        version="latest",
-        profile=_load_profile("catalog.json"),
-    ),
-    ProfileRegistryItem(
-        type=ProfileType.dataset,
-        path="https://fairspec.org/profiles/latest/dataset.json",
-        version="latest",
-        profile=_load_profile("dataset.json"),
-    ),
-    ProfileRegistryItem(
-        type=ProfileType.file_dialect,
-        path="https://fairspec.org/profiles/latest/file-dialect.json",
-        version="latest",
-        profile=_load_profile("file-dialect.json"),
-    ),
-    ProfileRegistryItem(
-        type=ProfileType.data_schema,
-        path="https://fairspec.org/profiles/latest/data-schema.json",
-        version="latest",
-        profile=_load_profile("data-schema.json"),
-    ),
-    ProfileRegistryItem(
-        type=ProfileType.table_schema,
-        path="https://fairspec.org/profiles/latest/table-schema.json",
-        version="latest",
-        profile=_load_profile("table-schema.json"),
-    ),
+        type=profile_type,
+        path=f"https://fairspec.org/profiles/{version}/{profile_type.value}.json",
+        version=version,
+        profile=profile,
+    )
+    for profile_type, profile in _bundled_profiles.items()
+    for version in ("latest", FAIRSPEC_VERSION)
 ]

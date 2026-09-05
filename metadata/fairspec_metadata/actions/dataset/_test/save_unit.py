@@ -1,10 +1,14 @@
 import json
+from unittest.mock import patch
 
 import pytest
 
 from fairspec_metadata.models.datacite.creator import Creator
 from fairspec_metadata.models.datacite.title import Title
+from fairspec_metadata.actions.dataset.validate import validate_dataset_descriptor
+from fairspec_metadata.actions.json_schema.load import load_json_schema
 from fairspec_metadata.models.dataset import Dataset
+from fairspec_metadata.models.integrity import Integrity, IntegrityType
 from fairspec_metadata.models.resource import Resource
 from fairspec_metadata.settings import FAIRSPEC_VERSION
 
@@ -100,3 +104,26 @@ class TestSaveDatasetDescriptor:
         with open(path, encoding="utf-8") as f:
             content = json.load(f)
         assert content["resources"][0]["data"] == "data.csv"
+
+    def test_saved_dataset_validates_offline(self, tmp_path):
+        path = str(tmp_path / "dataset.json")
+        dataset = Dataset(
+            resources=[
+                Resource(
+                    name="test_resource",
+                    data=str(tmp_path / "data.csv"),
+                    integrity=Integrity(type=IntegrityType.sha256, hash="abc"),
+                ),
+            ],
+        )
+        save_dataset_descriptor(dataset, path=path)
+
+        load_json_schema.cache_clear()
+        with patch(
+            "fairspec_metadata.actions.descriptor.load.urllib.request.urlopen",
+            side_effect=OSError("offline"),
+        ):
+            report = validate_dataset_descriptor(path)
+
+        assert report.errors == []
+        assert report.valid
