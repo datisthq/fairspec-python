@@ -15,7 +15,12 @@ from pydantic import TypeAdapter
 from fairspec_table.actions.column.inspect import inspect_column
 from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
-from fairspec_table.settings import ERROR_COLUMN_NAME, NUMBER_COLUMN_NAME
+from fairspec_table.settings import (
+    ERROR_COLUMN_NAME,
+    INSPECT_COLUMN_CONCURRENCY,
+    INSPECT_ROW_CONCURRENCY,
+    NUMBER_COLUMN_NAME,
+)
 
 from .checks.key import RowKeyCheck, create_row_key_checks
 
@@ -78,7 +83,9 @@ def _inspect_columns(
         column_mapping = ColumnMapping(source=polars_column, target=column)
         return inspect_column(column_mapping, table, max_errors=max_column_errors)
 
-    for chunk in iter_concurrent_chunks(inspect, columns, concurrency=concurrency):
+    for chunk in iter_concurrent_chunks(
+        inspect, columns, concurrency=concurrency or INSPECT_COLUMN_CONCURRENCY
+    ):
         for column_errors in chunk:
             errors.extend(column_errors)
 
@@ -125,7 +132,9 @@ def _inspect_rows(
         return check_errors
 
     checks = create_row_key_checks(mapping)
-    for chunk in iter_concurrent_chunks(inspect, checks, concurrency=concurrency):
+    for chunk in iter_concurrent_chunks(
+        inspect, checks, concurrency=concurrency or INSPECT_ROW_CONCURRENCY
+    ):
         for check_errors in chunk:
             errors.extend(check_errors)
 
