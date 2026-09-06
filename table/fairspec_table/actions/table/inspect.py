@@ -100,10 +100,13 @@ def _inspect_rows(
     max_row_errors = math.ceil(max_errors / len(columns)) if columns else max_errors
 
     def inspect(check: RowKeyCheck) -> list[TableError]:
+        # A literal is broadcast to every row, so flag the error with a boolean rather
+        # than a JSON template, which would materialize a full-length string column.
+        # The check owns a single template, so it is read from the closure below.
         row_check_table = table.with_row_index(NUMBER_COLUMN_NAME, 1).with_columns(
             pl.when(check.is_error_expr)
-            .then(pl.lit(check.error_template))
-            .otherwise(pl.lit(None))
+            .then(pl.lit(True))
+            .otherwise(pl.lit(None, dtype=pl.Boolean))
             .alias(ERROR_COLUMN_NAME)
         )
 
@@ -115,7 +118,7 @@ def _inspect_rows(
 
         check_errors: list[TableError] = []
         for row in row_check_frame.to_dicts():
-            error_dict = json.loads(row[ERROR_COLUMN_NAME])
+            error_dict = json.loads(check.error_template)
             error_dict["rowNumber"] = row[NUMBER_COLUMN_NAME]
             check_errors.append(_row_error_adapter.validate_python(error_dict))
 
