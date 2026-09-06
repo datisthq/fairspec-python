@@ -55,7 +55,7 @@ def load_json_table(resource: Resource, **options: Unpack[LoadTableOptions]) -> 
         data: object = decode_json_buffer(buffer, is_lines=is_lines)
         if not is_default:
             data = _process_data(data, file_dialect)
-        table = pl.DataFrame(data).lazy()
+        table = pl.DataFrame(cast("list[dict[str, object]]", data)).lazy()
         tables.append(table)
 
     result = pl.concat(tables)
