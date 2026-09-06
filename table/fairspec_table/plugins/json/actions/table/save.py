@@ -12,6 +12,7 @@ from fairspec_table.actions.table_schema.infer import infer_table_schema_from_ta
 from fairspec_table.plugins.json.actions.buffer.decode import decode_json_buffer
 from fairspec_table.plugins.json.actions.buffer.encode import encode_json_buffer
 from fairspec_table.plugins.json.settings import NATIVE_TYPES
+from fairspec_table.settings import QUERY_ENGINE
 
 if TYPE_CHECKING:
     from fairspec_metadata import JsonFileDialect, JsonlFileDialect
@@ -38,7 +39,7 @@ def save_json_table(table: Table, **options: Unpack[SaveTableOptions]) -> str:
 
     table = denormalize_table(table, table_schema, nativeTypes=NATIVE_TYPES)
 
-    frame = cast("pl.DataFrame", table.collect())
+    frame = cast("pl.DataFrame", table.collect(engine=QUERY_ENGINE))
     if is_lines:
         text = frame.write_ndjson()
     else:

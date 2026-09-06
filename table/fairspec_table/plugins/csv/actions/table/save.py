@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Unpack, cast
-
-import polars as pl
+from typing import TYPE_CHECKING, Unpack
 
 from fairspec_dataset import assert_local_path_vacant
 from fairspec_metadata import Resource, TableSchema, get_supported_file_dialect
@@ -10,6 +8,7 @@ from fairspec_metadata import Resource, TableSchema, get_supported_file_dialect
 from fairspec_table.actions.table.denormalize import denormalize_table
 from fairspec_table.actions.table_schema.infer import infer_table_schema_from_table
 from fairspec_table.plugins.csv.settings import NATIVE_TYPES
+from fairspec_table.settings import QUERY_ENGINE
 
 if TYPE_CHECKING:
     from fairspec_table.models.table import SaveTableOptions, Table
@@ -56,7 +55,6 @@ def save_csv_table(table: Table, **options: Unpack[SaveTableOptions]) -> str:
         sink_options["separator"] = "\t"
         sink_options["quote_char"] = '"'
 
-    frame = cast("pl.DataFrame", table.collect())
-    frame.write_csv(path, **sink_options)  # type: ignore[arg-type]
+    table.sink_csv(path, engine=QUERY_ENGINE, **sink_options)  # type: ignore[arg-type]
 
     return path

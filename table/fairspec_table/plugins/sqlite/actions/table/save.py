@@ -15,6 +15,7 @@ from fairspec_table.plugins.sqlite.actions.table_schema.to_database import (
 )
 from fairspec_table.plugins.sqlite.models.schema import SqliteSchema
 from fairspec_table.plugins.sqlite.settings import NATIVE_TYPES
+from fairspec_table.settings import QUERY_ENGINE
 
 if TYPE_CHECKING:
     from fairspec_table.models.table import SaveTableOptions, Table
@@ -80,7 +81,7 @@ def _define_table(
 
 
 def _populate_table(conn: sqlite3.Connection, table_name: str, table: Table) -> None:
-    frame = cast("pl.DataFrame", table.collect())
+    frame = cast("pl.DataFrame", table.collect(engine=QUERY_ENGINE))
     records = frame.to_dicts()
     if not records:
         return

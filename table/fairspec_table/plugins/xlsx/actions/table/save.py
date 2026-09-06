@@ -11,6 +11,7 @@ from fairspec_table.actions.table.denormalize import denormalize_table
 from fairspec_table.actions.table_schema.infer import infer_table_schema_from_table
 from fairspec_table.plugins.xlsx.actions.buffer.encode import encode_xlsx_buffer
 from fairspec_table.plugins.xlsx.settings import NATIVE_TYPES
+from fairspec_table.settings import QUERY_ENGINE
 
 if TYPE_CHECKING:
     from fairspec_table.models.table import SaveTableOptions, Table
@@ -33,7 +34,7 @@ def save_xlsx_table(table: Table, **options: Unpack[SaveTableOptions]) -> str:
 
     table = denormalize_table(table, table_schema, nativeTypes=NATIVE_TYPES)
 
-    frame = cast("pl.DataFrame", table.collect())
+    frame = cast("pl.DataFrame", table.collect(engine=QUERY_ENGINE))
     sheet_name = getattr(file_dialect, "sheetName", None) or "Sheet1"
     format = getattr(file_dialect, "format", "xlsx")
     book_type = "ods" if format == "ods" else "xlsx"
