@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from fairspec_table.helpers.file_dialect import get_header_rows
-from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
+from fairspec_table.settings import QUERY_ENGINE, NUMBER_COLUMN_NAME
 
 if TYPE_CHECKING:
     from fairspec_table.models import FileDialectWithHeaderAndCommentRows, Table
@@ -27,7 +27,7 @@ def join_header_rows(
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .filter(pl.col(NUMBER_COLUMN_NAME).add(header_offset).is_in(header_rows))
         .select(*[pl.col(name).str.join(header_join) for name in labels])
-        .collect(engine=INSPECT_ENGINE)
+        .collect(engine=QUERY_ENGINE)
     )
     extra_labels = extra_labels_frame.row(0)
 

@@ -10,7 +10,7 @@ from pydantic import TypeAdapter
 
 from fairspec_table.models import CellMapping, ColumnMapping
 from fairspec_table.models.table import Table
-from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
+from fairspec_table.settings import QUERY_ENGINE, NUMBER_COLUMN_NAME
 
 from .checks.const import check_cell_const
 from .checks.enum import check_cell_enum
@@ -186,7 +186,7 @@ def _inspect_cells_in_polars(
         column_check_table.filter(pl.col("error").is_not_null())
         .drop("target")
         .head(max_errors)
-        .collect(engine=INSPECT_ENGINE)
+        .collect(engine=QUERY_ENGINE)
     )
 
     _cell_error_adapter = TypeAdapter(CellError)

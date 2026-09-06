@@ -17,7 +17,7 @@ from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
 from fairspec_table.settings import (
     ERROR_COLUMN_NAME,
-    INSPECT_ENGINE,
+    QUERY_ENGINE,
     NUMBER_COLUMN_NAME,
 )
 
@@ -117,7 +117,7 @@ def _inspect_rows(
         row_check_frame: pl.DataFrame = (  # ty: ignore[invalid-assignment] https://github.com/astral-sh/ty/issues/2278
             row_check_table.filter(pl.col(ERROR_COLUMN_NAME).is_not_null())
             .head(max_row_errors)
-            .collect(engine=INSPECT_ENGINE)
+            .collect(engine=QUERY_ENGINE)
         )
 
         check_errors: list[TableError] = []

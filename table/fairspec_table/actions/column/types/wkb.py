@@ -5,7 +5,7 @@ import shapely
 from fairspec_metadata import CellTypeError, ColumnType, WkbColumn
 
 from fairspec_table.models.table import Table
-from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
+from fairspec_table.settings import QUERY_ENGINE, NUMBER_COLUMN_NAME
 
 
 def inspect_wkb_column(column: WkbColumn, table: Table) -> list[CellTypeError]:
@@ -16,7 +16,7 @@ def inspect_wkb_column(column: WkbColumn, table: Table) -> list[CellTypeError]:
     frame: pl.DataFrame = (  # ty: ignore[invalid-assignment] https://github.com/astral-sh/ty/issues/2278
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .select(pl.col(NUMBER_COLUMN_NAME), pl.col(column.name).alias("source"))
-        .collect(engine=INSPECT_ENGINE)
+        .collect(engine=QUERY_ENGINE)
     )
 
     for row in frame.to_dicts():

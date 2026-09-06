@@ -22,7 +22,7 @@ from fairspec_metadata import CellError
 
 from fairspec_table.helpers import get_is_object
 from fairspec_table.models import Table
-from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
+from fairspec_table.settings import QUERY_ENGINE, NUMBER_COLUMN_NAME
 
 
 def inspect_text_column(
@@ -37,7 +37,7 @@ def inspect_text_column(
         pl.DataFrame,
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .select(pl.col(NUMBER_COLUMN_NAME), pl.col(column.name).alias("source"))
-        .collect(engine=INSPECT_ENGINE),
+        .collect(engine=QUERY_ENGINE),
     )
 
     for row in frame.to_dicts():
@@ -79,7 +79,7 @@ def inspect_json_column(
         pl.DataFrame,
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .select(pl.col(NUMBER_COLUMN_NAME), pl.col(column.name).alias("source"))
-        .collect(engine=INSPECT_ENGINE),
+        .collect(engine=QUERY_ENGINE),
     )
 
     for row in frame.to_dicts():

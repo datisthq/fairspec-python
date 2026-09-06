@@ -12,7 +12,7 @@ from fairspec_metadata import (
     resolve_table_schema,
 )
 
-from fairspec_table.settings import INSPECT_ENGINE
+from fairspec_table.settings import QUERY_ENGINE
 
 from fairspec_library.actions.table.load import load_table
 from fairspec_library.models.table import ValidateTableOptions
@@ -72,7 +72,7 @@ def _validate_foreign_key(
         table.select(columns)
         .join(ref_selected, on=columns, how="anti")
         .unique()
-        .collect(engine=INSPECT_ENGINE)
+        .collect(engine=QUERY_ENGINE)
     )
 
     errors: list[ForeignKeyError] = []

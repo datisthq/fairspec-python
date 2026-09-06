@@ -6,7 +6,7 @@ from importlib.resources import files
 from fairspec_metadata import CellTypeError, ColumnType, GeojsonColumn, inspect_json
 
 from fairspec_table.models.table import Table
-from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
+from fairspec_table.settings import QUERY_ENGINE, NUMBER_COLUMN_NAME
 
 
 def inspect_geojson_column(column: GeojsonColumn, table: Table) -> list[CellTypeError]:
@@ -17,7 +17,7 @@ def inspect_geojson_column(column: GeojsonColumn, table: Table) -> list[CellType
     frame: pl.DataFrame = (  # ty: ignore[invalid-assignment] https://github.com/astral-sh/ty/issues/2278
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .select(pl.col(NUMBER_COLUMN_NAME), pl.col(column.name).alias("source"))
-        .collect(engine=INSPECT_ENGINE)
+        .collect(engine=QUERY_ENGINE)
     )
 
     type_json_schema = _load_geojson_schema()

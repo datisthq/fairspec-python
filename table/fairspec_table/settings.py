@@ -3,10 +3,11 @@ from __future__ import annotations
 NUMBER_COLUMN_NAME = "fairspec:number"
 ERROR_COLUMN_NAME = "fairspec:error"
 
-# Checks scan the whole source, so the in-memory engine holds the file while it
-# collects and peak memory grows with it. The streaming engine keeps a bounded
-# working set instead: validating 50MB, 500MB and 1GB all fit in the same 384MB.
-INSPECT_ENGINE = "streaming"
+# The engine polars executes a query plan with, for collects and sinks alike. The
+# in-memory engine holds the whole source while it runs, so peak memory grows with
+# the file; the streaming engine keeps a bounded working set instead, and 50MB,
+# 500MB and 1GB validations all fit in the same 384MB.
+QUERY_ENGINE = "streaming"
 
 BASE64_REGEX = (
     r"^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$"
