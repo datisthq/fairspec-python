@@ -17,8 +17,9 @@ from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
 from fairspec_table.settings import (
     ERROR_COLUMN_NAME,
-    QUERY_ENGINE,
+    INSPECT_COLUMN_CONCURRENCY,
     NUMBER_COLUMN_NAME,
+    QUERY_ENGINE,
 )
 
 from .checks.key import RowKeyCheck, create_row_key_checks
@@ -82,7 +83,9 @@ def _inspect_columns(
         column_mapping = ColumnMapping(source=polars_column, target=column)
         return inspect_column(column_mapping, table, max_errors=max_column_errors)
 
-    for chunk in iter_concurrent_chunks(inspect, columns, concurrency=concurrency):
+    for chunk in iter_concurrent_chunks(
+        inspect, columns, concurrency=concurrency or INSPECT_COLUMN_CONCURRENCY
+    ):
         for column_errors in chunk:
             errors.extend(column_errors)
 
