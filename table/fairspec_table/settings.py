@@ -3,12 +3,10 @@ from __future__ import annotations
 NUMBER_COLUMN_NAME = "fairspec:number"
 ERROR_COLUMN_NAME = "fairspec:error"
 
-# Each check scans the whole source file, and polars materializes a CSV in full
-# however the query is collected, so peak memory is the file size times the number
-# of checks in flight. Validating a 1 GB file needed 12GB at one check per core
-# against 2.0GB serially, for 5.0s against 7.4s.
-INSPECT_COLUMN_CONCURRENCY = 1
-INSPECT_ROW_CONCURRENCY = 1
+# Checks scan the whole source, so the in-memory engine holds the file while it
+# collects and peak memory grows with it. The streaming engine keeps a bounded
+# working set instead: validating 50MB, 500MB and 1GB all fit in the same 384MB.
+INSPECT_ENGINE = "streaming"
 
 BASE64_REGEX = (
     r"^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$"

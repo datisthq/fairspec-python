@@ -12,6 +12,8 @@ from fairspec_metadata import (
     resolve_table_schema,
 )
 
+from fairspec_table.settings import INSPECT_ENGINE
+
 from fairspec_library.actions.table.load import load_table
 from fairspec_library.models.table import ValidateTableOptions
 
@@ -70,7 +72,7 @@ def _validate_foreign_key(
         table.select(columns)
         .join(ref_selected, on=columns, how="anti")
         .unique()
-        .collect()
+        .collect(engine=INSPECT_ENGINE)
     )
 
     errors: list[ForeignKeyError] = []

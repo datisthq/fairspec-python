@@ -7,7 +7,7 @@ from fairspec_metadata import CellTypeError, ColumnType, DurationColumn
 from fairspec_metadata import CellError
 
 from fairspec_table.models.table import Table
-from fairspec_table.settings import NUMBER_COLUMN_NAME
+from fairspec_table.settings import INSPECT_ENGINE, NUMBER_COLUMN_NAME
 
 
 def inspect_duration_column(column: DurationColumn, table: Table) -> list[CellError]:
@@ -16,7 +16,7 @@ def inspect_duration_column(column: DurationColumn, table: Table) -> list[CellEr
     frame: pl.DataFrame = (  # ty: ignore[invalid-assignment] https://github.com/astral-sh/ty/issues/2278
         table.with_row_index(NUMBER_COLUMN_NAME, 1)
         .select(pl.col(NUMBER_COLUMN_NAME), pl.col(column.name).alias("source"))
-        .collect()
+        .collect(engine=INSPECT_ENGINE)
     )
 
     for row in frame.to_dicts():

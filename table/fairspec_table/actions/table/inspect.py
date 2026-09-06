@@ -17,8 +17,7 @@ from fairspec_table.helpers.schema import get_polars_schema
 from fairspec_table.models import ColumnMapping, SchemaMapping, Table
 from fairspec_table.settings import (
     ERROR_COLUMN_NAME,
-    INSPECT_COLUMN_CONCURRENCY,
-    INSPECT_ROW_CONCURRENCY,
+    INSPECT_ENGINE,
     NUMBER_COLUMN_NAME,
 )
 
@@ -83,9 +82,7 @@ def _inspect_columns(
         column_mapping = ColumnMapping(source=polars_column, target=column)
         return inspect_column(column_mapping, table, max_errors=max_column_errors)
 
-    for chunk in iter_concurrent_chunks(
-        inspect, columns, concurrency=concurrency or INSPECT_COLUMN_CONCURRENCY
-    ):
+    for chunk in iter_concurrent_chunks(inspect, columns, concurrency=concurrency):
         for column_errors in chunk:
             errors.extend(column_errors)
 
@@ -120,7 +117,7 @@ def _inspect_rows(
         row_check_frame: pl.DataFrame = (  # ty: ignore[invalid-assignment] https://github.com/astral-sh/ty/issues/2278
             row_check_table.filter(pl.col(ERROR_COLUMN_NAME).is_not_null())
             .head(max_row_errors)
-            .collect()
+            .collect(engine=INSPECT_ENGINE)
         )
 
         check_errors: list[TableError] = []
@@ -132,9 +129,7 @@ def _inspect_rows(
         return check_errors
 
     checks = create_row_key_checks(mapping)
-    for chunk in iter_concurrent_chunks(
-        inspect, checks, concurrency=concurrency or INSPECT_ROW_CONCURRENCY
-    ):
+    for chunk in iter_concurrent_chunks(inspect, checks, concurrency=concurrency):
         for check_errors in chunk:
             errors.extend(check_errors)
 
