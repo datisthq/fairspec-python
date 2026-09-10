@@ -1,12 +1,10 @@
-name: general
+name: test
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+  workflow_call:
 
 jobs:
   test-linux:
@@ -66,47 +64,3 @@ jobs:
         run: uv run task install
       - name: Test Packages
         run: uv run task test
-
-  release:
-    needs: [test-linux, test-macos, test-windows]
-    environment: release
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && !contains(github.ref, 'refs/tags/')
-
-    outputs:
-      created: ${{ steps.release.outputs.released }}
-      version: ${{ steps.release.outputs.version }}
-
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-      pull-requests: write
-
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-        with:
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: "3.12"
-      - name: Setup uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
-      - name: Install Dependencies
-        run: uv run task install
-      - name: Release Packages
-        uses: python-semantic-release/python-semantic-release@0dc72ac9058a62054a45f6344c83a423d7f906a8 # v9
-        id: release
-        with:
-          build: false
-          commit: false
-          changelog: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Packages
-        if: steps.release.outputs.released == 'true'
-        run: uv run task build
-      - name: Publish Packages
-        if: steps.release.outputs.released == 'true'
-        run: uv run task publish
