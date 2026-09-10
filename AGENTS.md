@@ -16,6 +16,16 @@ source plugins, and a CLI. (Also read by Claude Code via `.claude/CLAUDE.md`.)
 - Start a plan from a new/updated API summary (models/signatures) and the most challenging points, then continue with your default settings
 - Update docs when a change requires it
 
+## Skills
+
+Depth lives in `project/skills/` (reached by Claude Code through the `.claude/skills` symlink), so
+this file carries invariants and the skills carry procedure. Reach for one before working in
+its area:
+
+| skill            | when                                                          |
+| ---------------- | ------------------------------------------------------------- |
+| `review-changes` | reviewing a pull request — also what the review workflow runs |
+
 ## Commands
 
 - `uv run task install` — `uv sync --all-packages` plus the lefthook hooks
