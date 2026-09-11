@@ -43,7 +43,7 @@ export default defineConfig({
       title: "Changelog",
       prefix: "/changelog/",
       type: "changelog",
-      source: "https://github.com/datisthq/fairspec-python",
+      source: "CHANGELOG.md",
       version: true,
       icon: "history",
     },
