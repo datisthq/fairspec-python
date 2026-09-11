@@ -8,7 +8,7 @@
 
 Two bugs on the same path, ported from the fairspec-typescript fix.
 
-The registry keyed the five vendored profiles only on https://fairspec.org/profiles/latest/<name>.json, but every save_* action stamps a versioned $schema from FAIRSPEC_VERSION, and both lookups match the URL by exact string equality. So the library wrote a URL its own bundle could never match: every saved descriptor missed the cache and went remote.
+The registry keyed the five vendored profiles only on `https://fairspec.org/profiles/latest/<name>.json`, but every save_* action stamps a versioned $schema from FAIRSPEC_VERSION, and both lookups match the URL by exact string equality. So the library wrote a URL its own bundle could never match: every saved descriptor missed the cache and went remote.
 
 That remote load then failed outright. _load_remote_descriptor passed a bare URL to urlopen, so requests carried the default Python-urllib agent, which fairspec.org (Cloudflare) answers with 403:
 
