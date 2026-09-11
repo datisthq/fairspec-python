@@ -16,19 +16,6 @@ extend-exclude = [
   ".cache",
 ]
 
-[tool.semantic_release]
-commit_parser = "conventional"
-allow_zero_version = true
-version_toml = [
-  "pyproject.toml:project.version",
-  "dataset/pyproject.toml:project.version",
-  "fairspec/pyproject.toml:project.version",
-  "library/pyproject.toml:project.version",
-  "metadata/pyproject.toml:project.version",
-  "table/pyproject.toml:project.version",
-  "terminal/pyproject.toml:project.version",
-]
-
 [tool.taskipy.tasks]
 build = "uv build --all-packages --out-dir build"
 coverage = "sensible-browser htmlcov/index.html"
@@ -62,7 +49,6 @@ index-out-of-bounds = "ignore"
 package = false
 dev-dependencies = [
   "lefthook==1.11.13",
-  "python-semantic-release==10.5.3",
   "pytest==9.0.2",
   "ruff==0.15.0",
   "taskipy==1.14.1",
