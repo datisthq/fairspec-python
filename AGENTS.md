@@ -132,6 +132,24 @@ relative import reaches beyond the top-level package.
 - Don't add useless comments like "Arrange", "Act", "Assert"
 - Network tests use `@pytest.mark.vcr` from pytest-recording; the cassette lands in `_test/fixtures/generated/<TestClass>.<test_name>.yaml`. Renaming a class or test renames that file, so the old cassette is orphaned and the next run silently re-records from the live network — check `git status` after renaming a recorded test.
 
+## Releases
+
+Conventional Commits drive [release-please](https://github.com/googleapis/release-please): a
+`feat` or `fix` landing on `main` opens a Release PR, and merging that PR cuts the version,
+tags it and publishes to PyPI. Merging is the gate — nothing ships without it.
+
+- **IMPORTANT: only changes to the published packages use `feat` or `fix`.** Everything else MUST
+  be `chore` or `docs` — CI and workflows, release config, dependencies, tooling, `AGENTS.md`,
+  the README, the docs site
+- This is not a style preference. release-please reads the commit type: a `fix:` on a workflow
+  file cuts a release and burns a version number on a change no consumer can observe. PyPI never
+  lets a version be re-uploaded
+- When in doubt, ask whether the change alters what someone installing a package gets. If it does
+  not, it is `chore`
+- Release config lives in `.release/config.json` and `.release/manifest.json`. The manifest holds
+  the current version and release-please maintains it — never hand-edit it. All six packages are
+  lock-stepped to one version via `extra-files`
+
 ## Docs
 
 - Add docstrings only for public APIs and don't use them for files
