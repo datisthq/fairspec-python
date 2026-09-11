@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/datisthq/fairspec-python/compare/v0.2.0...v0.2.1) (2026-09-11)
+
+
+### Documentation
+
+* **agents:** require chore for release-tooling commits ([2276493](https://github.com/datisthq/fairspec-python/commit/2276493e48e2b332d22522c47246bec72dd15fba))
+
 ## 0.2.0 (2026-09-10)
 
 ### Bug Fixes
