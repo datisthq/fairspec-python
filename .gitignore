@@ -235,4 +235,5 @@ build/Release
 
 # User
 /.claude/
+/.cursor/
 /coverage.json
