@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1](https://github.com/datisthq/fairspec-python/compare/v0.2.0...v0.2.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* **ci:** look up the release PR instead of reading the action output ([2d5239f](https://github.com/datisthq/fairspec-python/commit/2d5239f40f9b69bbed012a96993a0eac9799448c))
+
+
+### Documentation
+
+* **agents:** require chore for release-tooling commits ([2276493](https://github.com/datisthq/fairspec-python/commit/2276493e48e2b332d22522c47246bec72dd15fba))
+
 ## 0.2.0 (2026-09-10)
 
 ### Bug Fixes
