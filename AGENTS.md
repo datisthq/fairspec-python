@@ -18,13 +18,13 @@ source plugins, and a CLI. (Also read by Claude Code via `.claude/CLAUDE.md`.)
 
 ## Skills
 
-Depth lives in `project/skills/` (reached by Claude Code through the `.claude/skills` symlink), so
+Depth lives in `.agents/skills/` (reached by Claude Code through the `.claude/skills` symlink), so
 this file carries invariants and the skills carry procedure. Reach for one before working in
-its area:
+its area. Each is named `<subject>-<facet>`, subject first (`change-review`):
 
 | skill            | when                                                          |
 | ---------------- | ------------------------------------------------------------- |
-| `review-changes` | reviewing a pull request — also what the review workflow runs |
+| `change-review`  | reviewing a pull request — also what the review workflow runs |
 
 ## Commands
 
@@ -63,7 +63,7 @@ the meta-package, which is `fairspec/fairspec/`, and `project/`, which ships not
 - `library` — the plugin registry and the facade actions every consumer calls: `load_table`, `save_table`, `load_dataset`, `save_dataset`, `validate_*`, `infer_*`.
 - `terminal` — the `fairspec` CLI (typer), one command group per entity.
 - `fairspec` — umbrella package re-exporting `fairspec_library` and shipping the CLI binary.
-- `project` — the documentation site in `docs/`, the agent skills in `skills/` (reached as `.claude/skills`), and the docs guard in `_test/`. Not a uv workspace member and nothing imports it, which is why the skills live here rather than in a package something imports.
+- `project` — the documentation site in `docs/` and the docs guard in `_test/`. Not a uv workspace member and nothing imports it.
 
 Unlike `fairspec-typescript`, this repo has no `mcp-server` and no `extension` package.
 

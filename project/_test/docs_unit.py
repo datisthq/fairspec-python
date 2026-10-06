@@ -56,7 +56,7 @@ class TestDocs:
         path = os.path.join(ROOT, ".claude", "skills")
         target = os.readlink(path)
         resolved = os.path.abspath(os.path.join(os.path.dirname(path), target))
-        assert resolved == os.path.join(ROOT, "project", "skills")
+        assert resolved == os.path.join(ROOT, ".agents", "skills")
 
 
 def read_doc(name: str) -> str:
