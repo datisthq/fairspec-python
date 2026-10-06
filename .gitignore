@@ -234,5 +234,5 @@ build/Release
 .content-collections/
 
 # User
-/.claude/settings.local.json
+/.claude/
 /coverage.json

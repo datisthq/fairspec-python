@@ -2,7 +2,7 @@
 
 Python uv workspace monorepo — a data management framework built on the Fairspec standard
 and Polars DataFrames: metadata models, a table engine with per-format plugins, dataset
-source plugins, and a CLI. (Also read by Claude Code via `.claude/CLAUDE.md`.)
+source plugins, and a CLI.
 
 ## Rules
 
@@ -18,7 +18,7 @@ source plugins, and a CLI. (Also read by Claude Code via `.claude/CLAUDE.md`.)
 
 ## Skills
 
-Depth lives in `.agents/skills/` (reached by Claude Code through the `.claude/skills` symlink), so
+Depth lives in `.agents/skills/` (reached by Claude Code through the `.claude/skills` symlink `uv run task install` creates), so
 this file carries invariants and the skills carry procedure. Reach for one before working in
 its area. Each is named `<subject>-<facet>`, subject first (`change-review`):
 

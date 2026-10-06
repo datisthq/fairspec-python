@@ -20,7 +20,7 @@ extend-exclude = [
 build = "uv build --all-packages --out-dir build"
 coverage = "sensible-browser htmlcov/index.html"
 format = "ruff format"
-install = "uv sync --all-packages && ([ \"$CI\" = 'true' ] || lefthook install)"
+install = "uv sync --all-packages && ([ \"$CI\" = 'true' ] || lefthook install) && mkdir -p .claude && ln -sfn ../.agents/skills .claude/skills"
 lint = "ruff check"
 publish = "uv publish build/*"
 unit = "pytest --cov --cov-report html --cov-report json"
